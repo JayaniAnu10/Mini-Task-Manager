@@ -1,5 +1,6 @@
 package com.taskmanager.backend.configs;
 
+import com.taskmanager.backend.enums.Role;
 import com.taskmanager.backend.filters.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -65,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/user/*").permitAll()
                         .requestMatchers(HttpMethod.POST,"/tasks").permitAll()
                         .requestMatchers(HttpMethod.GET,"/tasks").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/tasks/*").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/admin/tasks").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
