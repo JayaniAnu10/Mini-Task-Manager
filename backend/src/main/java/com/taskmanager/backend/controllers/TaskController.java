@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,7 +23,9 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity createTask(@RequestBody TaskAddRequest task,
-                                     @RequestParam UUID userId) {
+                                     Authentication authentication) {
+
+        UUID userId = (UUID)authentication.getPrincipal();
 
         return taskService.createTask(task, userId);
     }
@@ -35,7 +38,9 @@ public class TaskController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dueDate") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam UUID userId) {
+            Authentication authentication) {
+
+        UUID userId = (UUID)authentication.getPrincipal();
 
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -51,10 +56,23 @@ public class TaskController {
     public ResponseEntity updateTask(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTaskRequest request,
-            @RequestParam UUID userId) {
+            Authentication authentication) {
 
+        UUID userId = (UUID)authentication.getPrincipal();
         return taskService.updateTask(id, request, userId);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteTask(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        UUID userId = (UUID)authentication.getPrincipal();
+
+        taskService.deleteTask(id, userId);
+        return ResponseEntity.ok().build();
+    }
+
+
 
 
 }
