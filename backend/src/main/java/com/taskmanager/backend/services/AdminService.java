@@ -1,5 +1,6 @@
 package com.taskmanager.backend.services;
 
+import com.taskmanager.backend.dtos.AllTaskResponse;
 import com.taskmanager.backend.dtos.TaskListing;
 import com.taskmanager.backend.dtos.TaskResponse;
 import com.taskmanager.backend.enums.Priority;
@@ -19,14 +20,13 @@ import java.util.List;
 public class AdminService {
     private final TaskRepository taskRepository;
 
-    public Page<TaskResponse> getAllTasks(
+    public Page<AllTaskResponse> getAllTasks(
             Status status,
             Priority priority,
             int page, int size, Sort sort) {
 
         Pageable pageable = PageRequest.of(page, size,sort);
 
-        var listing = taskRepository.findAllWithFilters(status, priority, pageable);
-        return listing;
+        return taskRepository.findAllWithFilters(status, priority, pageable);
     }
 }

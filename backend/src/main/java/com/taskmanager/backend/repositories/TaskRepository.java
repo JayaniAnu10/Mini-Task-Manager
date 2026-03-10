@@ -1,5 +1,6 @@
 package com.taskmanager.backend.repositories;
 
+import com.taskmanager.backend.dtos.AllTaskResponse;
 import com.taskmanager.backend.dtos.TaskResponse;
 import com.taskmanager.backend.entities.Task;
 import com.taskmanager.backend.enums.Priority;
@@ -38,18 +39,19 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     Long countByUser_Id(UUID userId);
 
     @Query("""
-            SELECT new com.taskmanager.backend.dtos.TaskResponse(
+            SELECT new com.taskmanager.backend.dtos.AllTaskResponse(
            t.title,
            t.description,
            t.status,
            t.priority,
            t.dueDate,
-           t.createdAt
+           t.createdAt,
+           t.user.email
        )
        FROM Task t
             WHERE (:status   IS NULL OR t.status   = :status)
               AND (:priority IS NULL OR t.priority = :priority)""")
-    Page<TaskResponse> findAllWithFilters(
+    Page<AllTaskResponse> findAllWithFilters(
             @Param("status")   Status status,
             @Param("priority") Priority priority,
             Pageable pageable

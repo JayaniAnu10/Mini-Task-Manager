@@ -1,6 +1,6 @@
 package com.taskmanager.backend.controllers;
 
-import com.taskmanager.backend.dtos.TaskResponse;
+import com.taskmanager.backend.dtos.AllTaskResponse;
 import com.taskmanager.backend.enums.Priority;
 import com.taskmanager.backend.enums.Status;
 import com.taskmanager.backend.services.AdminService;
@@ -19,7 +19,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/tasks")
-    public Page<TaskResponse> getAllTasks(
+    public Page<AllTaskResponse> getAllTasks(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Priority priority,
             @RequestParam(defaultValue = "0") int page,
