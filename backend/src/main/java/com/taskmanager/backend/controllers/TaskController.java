@@ -72,7 +72,15 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity completeTask(
+            @PathVariable UUID id,
+            Authentication authentication) {
 
+        UUID userId = (UUID)authentication.getPrincipal();
+
+        return taskService.markAsCompleted(id, userId);
+    }
 
 
 }

@@ -69,6 +69,16 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    public ResponseEntity markAsCompleted(UUID taskId, UUID userId) {
+        User user = findUserById(userId);
+        Task task = findTaskById(taskId);
+        assertCanModify(user, task);
+
+        task.setStatus(Status.DONE);
+        taskRepository.save(task);
+        return ResponseEntity.ok().build();
+    }
+
     private void assertCanModify(User user, Task task) {
         if (!task.getUser().getId().equals(user.getId())) {
             throw new BadRequestException("You do not have permission to modify this task");
@@ -84,4 +94,5 @@ public class TaskService {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found: " + id));
     }
+
 }
