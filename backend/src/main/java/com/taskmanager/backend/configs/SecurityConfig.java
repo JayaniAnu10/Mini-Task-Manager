@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST,"/user/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/tasks").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
