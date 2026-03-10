@@ -2,10 +2,13 @@ package com.taskmanager.backend.services;
 
 import com.taskmanager.backend.dtos.TaskAddRequest;
 import com.taskmanager.backend.dtos.TaskListing;
+import com.taskmanager.backend.dtos.TaskResponse;
+import com.taskmanager.backend.dtos.UpdateTaskRequest;
 import com.taskmanager.backend.entities.Task;
 import com.taskmanager.backend.entities.User;
 import com.taskmanager.backend.enums.Priority;
 import com.taskmanager.backend.enums.Status;
+import com.taskmanager.backend.exceptions.BadRequestException;
 import com.taskmanager.backend.mappers.TaskMapper;
 import com.taskmanager.backend.repositories.TaskRepository;
 import com.taskmanager.backend.repositories.UserRepository;
@@ -47,5 +50,22 @@ public class TaskService {
         response.setTaskList(listing);
         return response;
 
+    }
+
+    public ResponseEntity updateTask(UUID taskId, UpdateTaskRequest request, UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));;
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        assertCanModify(user, task);
+
+        taskMapper.updateFromRequest(request, task);
+        taskRepository.save(task);
+        return ResponseEntity.ok().build();
+    }
+
+
+    private void assertCanModify(User user, Task task) {
+        if (!task.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("You do not have permission to modify this task");
+        }
     }
 }

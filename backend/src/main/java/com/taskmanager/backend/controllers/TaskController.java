@@ -2,14 +2,12 @@ package com.taskmanager.backend.controllers;
 
 import com.taskmanager.backend.dtos.TaskAddRequest;
 import com.taskmanager.backend.dtos.TaskListing;
-import com.taskmanager.backend.dtos.TaskResponse;
-import com.taskmanager.backend.entities.Task;
+import com.taskmanager.backend.dtos.UpdateTaskRequest;
 import com.taskmanager.backend.enums.Priority;
 import com.taskmanager.backend.enums.Status;
 import com.taskmanager.backend.services.TaskService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +45,15 @@ public class TaskController {
                 status, priority, userId,page, size, sort);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity updateTask(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateTaskRequest request,
+            @RequestParam UUID userId) {
+
+        return taskService.updateTask(id, request, userId);
     }
 
 

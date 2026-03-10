@@ -65,6 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/user/*").permitAll()
                         .requestMatchers(HttpMethod.POST,"/tasks").permitAll()
                         .requestMatchers(HttpMethod.GET,"/tasks").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/tasks/*").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
