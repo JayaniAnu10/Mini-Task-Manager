@@ -1,10 +1,20 @@
 package com.taskmanager.backend.controllers;
 
+import com.taskmanager.backend.configs.JwtConfig;
+import com.taskmanager.backend.dtos.JwtResponse;
+import com.taskmanager.backend.dtos.UserLoginRequest;
 import com.taskmanager.backend.dtos.UserRegisterRequest;
 import com.taskmanager.backend.dtos.UserRegisterResponse;
+import com.taskmanager.backend.repositories.UserRepository;
+import com.taskmanager.backend.services.JwtService;
 import com.taskmanager.backend.services.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/auth")
@@ -12,10 +22,40 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class AuthController {
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final JwtConfig jwtConfig;
 
     @PostMapping("/register")
     public UserRegisterResponse registerUser(@Valid @RequestBody UserRegisterRequest request) {
         return userService.registerUser(request);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> login(
+            @Valid @RequestBody UserLoginRequest request,
+            HttpServletResponse response) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        var cookie = new Cookie("refreshToken", refreshToken.toString());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(jwtConfig.getRefreshTokenExpiration());
+        cookie.setSecure(false);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new JwtResponse(accessToken.toString()));
     }
 
 }
