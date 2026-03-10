@@ -90,4 +90,18 @@ public class AuthController {
         return ResponseEntity.ok(userDto);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(0);               // deleting cookie
+        cookie.setSecure(false);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
