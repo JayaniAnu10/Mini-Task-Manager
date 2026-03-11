@@ -85,12 +85,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100">
-        <div className="mb-4">
-          <h2 className="font-bold text-slate-700 text-sm uppercase tracking-wider">
-            Filters & Sorting
-          </h2>
-        </div>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow">
         <TaskFiltersBar
           filters={filters}
           onChange={(f) => setFilters({ ...f, page: 1 })}

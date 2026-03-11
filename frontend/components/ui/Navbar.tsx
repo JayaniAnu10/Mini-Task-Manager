@@ -18,10 +18,7 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
             <CheckSquare className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
           </div>
-          <span
-            className="text-2xl font-bold text-slate-800"
-            style={{ fontFamily: "Syne, sans-serif" }}
-          >
+          <span className="text-2xl font-bold text-slate-800">
             Task<span className="text-blue-600">Flow</span>
           </span>
         </div>

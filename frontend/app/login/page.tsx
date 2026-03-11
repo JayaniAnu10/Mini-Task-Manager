@@ -81,7 +81,7 @@ export default function LoginPage() {
         </p>
 
         <div className="mt-6 rounded-2xl bg-blue-100 px-4 py-3 text-center md:px-6">
-          <p className="text-base font-semibold text-blue-700 ">
+          <p className="text-base  text-blue-700 ">
             Admin Demo: admin@gmail.com / admin123
           </p>
         </div>
