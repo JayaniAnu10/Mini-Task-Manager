@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, CheckSquare } from "lucide-react";
 import { loginUser } from "@/lib/authApi";
+import { getMe } from "@/lib/authApi";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function LoginPage() {
@@ -22,10 +23,20 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: ({ token }) => {
+    onSuccess: async ({ token }) => {
       localStorage.setItem("accessToken", token);
-      toast.success("You have signed in successfully.");
-      router.push("/tasks");
+      try {
+        const me = await getMe();
+        toast.success("You have signed in successfully.");
+        if (me.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/tasks");
+        }
+      } catch {
+        toast.success("You have signed in successfully.");
+        router.push("/tasks");
+      }
     },
     onError: (err) => {
       const message = getApiErrorMessage(

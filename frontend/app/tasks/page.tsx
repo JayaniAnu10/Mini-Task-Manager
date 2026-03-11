@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTaskStore } from "@/store/taskStore";
 import { Task, PaginatedResponse, TaskFilters } from "@/types";
 import TaskForm from "@/components/ui/tasks/TaskForm";
@@ -8,9 +9,11 @@ import TaskFiltersBar from "@/components/ui/tasks/TaskFiltersBar";
 import Pagination from "@/components/ui/tasks/Pagination";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/Modal";
-import { Plus, AlertTriangle, Shield } from "lucide-react";
+import { Plus, AlertTriangle } from "lucide-react";
+import { getMe, MeResponse } from "@/lib/authApi";
 
 export default function TaskPage() {
+  const router = useRouter();
   const {
     fetchTasks,
     createTask,
@@ -21,6 +24,8 @@ export default function TaskPage() {
     setFilters,
   } = useTaskStore();
 
+  const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [paged, setPaged] = useState<PaginatedResponse<Task>>({
     data: [],
     total: 0,
@@ -34,24 +39,42 @@ export default function TaskPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const isAdmin = true;
+  useEffect(() => {
+    getMe()
+      .then((me) => {
+        if (me.role === "ADMIN") {
+          router.replace("/admin");
+        } else {
+          setCurrentUser(me);
+          setAuthChecked(true);
+        }
+      })
+      .catch(() => {
+        router.replace("/login");
+      });
+  }, [router]);
+
+  const isAdmin = false;
 
   const load = useCallback(
     async (f: TaskFilters) => {
+      if (!authChecked) return;
       setIsLoading(true);
       try {
-        const result = await fetchTasks("local-user", isAdmin, f);
+        const result = await fetchTasks(currentUser?.id ?? "", isAdmin, f);
         setPaged(result);
       } finally {
         setIsLoading(false);
       }
     },
-    [isAdmin, fetchTasks],
+    [authChecked, currentUser, isAdmin, fetchTasks],
   );
 
   useEffect(() => {
-    load(filters);
-  }, [filters, load]);
+    if (authChecked) {
+      load(filters);
+    }
+  }, [filters, load, authChecked]);
 
   const taskCountLabel = `${paged.total} ${paged.total === 1 ? "task" : "tasks"}`;
 
@@ -59,11 +82,12 @@ export default function TaskPage() {
     setSaving(true);
     await createTask({
       ...data,
-      userId: "local-user",
-      userName: "Task User",
+      userId: currentUser?.id ?? "",
+      userName: currentUser?.email ?? "",
     } as Omit<Task, "id" | "createdAt" | "updatedAt">);
     await load(filters);
     setSaving(false);
+    setFormOpen(false);
   };
 
   const handleEdit = async (data: Partial<Task>) => {
@@ -86,6 +110,14 @@ export default function TaskPage() {
     await markDone(id);
     await load(filters);
   };
+
+  if (!authChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-slate-400 text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">

@@ -20,6 +20,12 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface MeResponse {
+  id: string;
+  email: string;
+  role: string;
+}
+
 export async function registerUser(
   payload: RegisterRequest,
 ): Promise<RegisterResponse> {
@@ -32,5 +38,10 @@ export async function registerUser(
 
 export async function loginUser(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await apiClient.post<LoginResponse>("/auth/login", payload);
+  return data;
+}
+
+export async function getMe(): Promise<MeResponse> {
+  const { data } = await apiClient.get<MeResponse>("/auth/me");
   return data;
 }

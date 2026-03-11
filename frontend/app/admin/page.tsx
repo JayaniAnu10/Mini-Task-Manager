@@ -1,22 +1,20 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useTaskStore } from "@/store/taskStore";
 import { Task, PaginatedResponse, TaskFilters } from "@/types";
 import TaskCard from "@/components/ui/tasks/TaskCard";
 import TaskFiltersBar from "@/components/ui/tasks/TaskFiltersBar";
 import Pagination from "@/components/ui/tasks/Pagination";
-import { AlertTriangle, Shield, User } from "lucide-react";
-
-const ADMIN_USER = {
-  id: "local-user",
-  name: "Admin User",
-  role: "ADMIN" as const,
-};
+import { AlertTriangle, Shield } from "lucide-react";
+import { getMe, MeResponse } from "@/lib/authApi";
 
 export default function DashboardPage() {
-  const user = ADMIN_USER;
+  const router = useRouter();
   const { fetchTasks, filters, setFilters } = useTaskStore();
 
+  const [currentUser, setCurrentUser] = useState<MeResponse | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [paged, setPaged] = useState<PaginatedResponse<Task>>({
     data: [],
     total: 0,
@@ -26,46 +24,64 @@ export default function DashboardPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const isAdmin = user?.role === "ADMIN";
+  useEffect(() => {
+    getMe()
+      .then((me) => {
+        if (me.role !== "ADMIN") {
+          router.replace("/tasks");
+        } else {
+          setCurrentUser(me);
+          setAuthChecked(true);
+        }
+      })
+      .catch(() => {
+        router.replace("/login");
+      });
+  }, [router]);
 
   const load = useCallback(
     async (f: TaskFilters) => {
-      if (!user) return;
+      if (!authChecked || !currentUser) return;
       setIsLoading(true);
-      const result = await fetchTasks(user.id, isAdmin, f);
-      setPaged(result);
-      setIsLoading(false);
+      try {
+        const result = await fetchTasks(currentUser.id, true, f);
+        setPaged(result);
+      } finally {
+        setIsLoading(false);
+      }
     },
-    [user, isAdmin, fetchTasks],
+    [authChecked, currentUser, fetchTasks],
   );
 
   useEffect(() => {
-    load(filters);
-  }, [filters, load]);
+    if (authChecked) {
+      load(filters);
+    }
+  }, [filters, load, authChecked]);
+
+  if (!authChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-slate-400 text-sm">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            {isAdmin ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-blue-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wide">
-                <Shield className="w-3 h-3" /> Admin View
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full uppercase tracking-wide">
-                <User className="w-3 h-3" /> My Tasks
-              </span>
-            )}
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-blue-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wide">
+              <Shield className="w-3 h-3" /> Admin View
+            </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-800">
-            Good to see you, {user?.name?.split(" ")[0]}!
+            Good to see you, {currentUser?.email?.split("@")[0]}!
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            {isAdmin
-              ? "Viewing all tasks across the system"
-              : "Here are your assigned tasks"}
+            Viewing all tasks across the system
           </p>
           <p className="text-sm font-semibold text-slate-700 mt-2">
             Total tasks: {paged.total}
@@ -88,7 +104,7 @@ export default function DashboardPage() {
 
       {/* Task List */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
@@ -116,13 +132,10 @@ export default function DashboardPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {paged.data.map((task, i) => (
-            <div
-              key={task.id}
-              className={`animate-fade-in stagger-${Math.min(i + 1, 4)}`}
-            >
-              <TaskCard task={task} isAdmin={isAdmin} viewOnly />
+        <div className="rounded-2xl bg-white">
+          {paged.data.map((task) => (
+            <div key={task.id} className="py-2">
+              <TaskCard task={task} isAdmin={true} viewOnly />
             </div>
           ))}
         </div>
