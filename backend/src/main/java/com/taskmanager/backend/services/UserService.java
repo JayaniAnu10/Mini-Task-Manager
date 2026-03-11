@@ -1,5 +1,10 @@
 package com.taskmanager.backend.services;
 
+import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.taskmanager.backend.dtos.UserRegisterRequest;
 import com.taskmanager.backend.dtos.UserRegisterResponse;
 import com.taskmanager.backend.entities.User;
@@ -9,10 +14,8 @@ import com.taskmanager.backend.exceptions.NotFoundException;
 import com.taskmanager.backend.exceptions.PasswordMismatchException;
 import com.taskmanager.backend.mappers.UserMapper;
 import com.taskmanager.backend.repositories.UserRepository;
+
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import java.util.UUID;
 
 
 @Service
@@ -25,7 +28,7 @@ public class UserService {
     public UserRegisterResponse registerUser(UserRegisterRequest request) {
         if(userRepository.existsByEmail(request.getEmail())){
             throw new BadRequestException("Email already exists");
-        };
+        }
 
         if(!request.getPassword().equals(request.getConfirmPassword())){
             throw new PasswordMismatchException("Passwords do not match");

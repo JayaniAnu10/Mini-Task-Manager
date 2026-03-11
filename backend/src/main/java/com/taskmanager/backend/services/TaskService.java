@@ -32,7 +32,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
-    public ResponseEntity createTask(TaskAddRequest task, UUID userId) {
+    public ResponseEntity<Void> createTask(TaskAddRequest task, UUID userId) {
         User user = findUserById(userId);
         var newTask= taskMapper.toEntity(task);
         newTask.setCreatedAt(LocalDateTime.now());
@@ -47,12 +47,13 @@ public class TaskService {
         return taskRepository.findByUserIdWithFilters(user.getId(), status, priority, pageable);
     }
 
-    public ResponseEntity updateTask(UUID taskId, UpdateTaskRequest request, UUID userId) {
+    public ResponseEntity<Void> updateTask(UUID taskId, UpdateTaskRequest request, UUID userId) {
         User user = findUserById(userId);
         Task task = findTaskById(taskId);
         assertCanModify(user, task);
 
         taskMapper.updateFromRequest(request, task);
+        task.setUpdatedAt(LocalDateTime.now());
         taskRepository.save(task);
         return ResponseEntity.ok().build();
     }
@@ -65,7 +66,7 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public ResponseEntity markAsCompleted(UUID taskId, UUID userId) {
+    public ResponseEntity<Void> markAsCompleted(UUID taskId, UUID userId) {
         User user = findUserById(userId);
         Task task = findTaskById(taskId);
         assertCanModify(user, task);

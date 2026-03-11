@@ -33,7 +33,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public ResponseEntity createTask(@RequestBody TaskAddRequest task,
+    public ResponseEntity<Void> createTask(@Valid @RequestBody TaskAddRequest task,
                                      Authentication authentication) {
 
         UUID userId = (UUID)authentication.getPrincipal();
@@ -61,7 +61,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity updateTask(
+    public ResponseEntity<Void> updateTask(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTaskRequest request,
             Authentication authentication) {
@@ -71,7 +71,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteTask(
+    public ResponseEntity<Void> deleteTask(
             @PathVariable UUID id,
             Authentication authentication) {
         UUID userId = (UUID)authentication.getPrincipal();
@@ -81,7 +81,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/complete")
-    public ResponseEntity completeTask(
+    public ResponseEntity<Void> completeTask(
             @PathVariable UUID id,
             Authentication authentication) {
 

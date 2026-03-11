@@ -1,23 +1,34 @@
 package com.taskmanager.backend.controllers;
 
-import com.taskmanager.backend.configs.JwtConfig;
-import com.taskmanager.backend.dtos.*;
-import com.taskmanager.backend.mappers.UserMapper;
-import com.taskmanager.backend.repositories.UserRepository;
-import com.taskmanager.backend.services.JwtService;
-import com.taskmanager.backend.services.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import com.taskmanager.backend.configs.JwtConfig;
+import com.taskmanager.backend.dtos.JwtResponse;
+import com.taskmanager.backend.dtos.UserDto;
+import com.taskmanager.backend.dtos.UserLoginRequest;
+import com.taskmanager.backend.dtos.UserRegisterRequest;
+import com.taskmanager.backend.dtos.UserRegisterResponse;
+import com.taskmanager.backend.mappers.UserMapper;
+import com.taskmanager.backend.repositories.UserRepository;
+import com.taskmanager.backend.services.JwtService;
+import com.taskmanager.backend.services.UserService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RequestMapping("/auth")
 @RestController
@@ -68,7 +79,7 @@ public class AuthController {
         var jwt = jwtService.parseToken(refreshToken);
         if(jwt == null || jwt.isExpired()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        };
+        }
 
         var user = userRepository.findById(jwt.getUserId()).orElseThrow();
         var accessToken =jwtService.generateAccessToken(user);
