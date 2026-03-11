@@ -130,7 +130,7 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-base text-slate-500 md:text-lg">
+          <p className="mt-6 text-center text-base text-slate-500 ">
             Already have an account?{" "}
             <Link
               href="/login"
