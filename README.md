@@ -5,7 +5,7 @@
 Mini Task Manager is a full-stack task management application with role-based access.
 
 - Frontend: Next.js + TypeScript + Tailwind CSS
-- Backend: Spring Boot + Spring Security + JWT + JPA + Flyway
+- Backend: Spring Boot + Spring Security + JWT + Spring Data JPA (Hibernate) + Flyway
 - Database: MySQL
 - API docs: Swagger UI
 
@@ -15,7 +15,7 @@ The backend follows a layered architecture:
 
 - Controller layer: handles HTTP requests/responses
 - Service layer: contains business logic
-- Repository layer: handles database access using Spring Data JPA
+- Repository layer: handles database access using Spring Data JPA with Hibernate as ORM
 - DTO + Mapper layer: request/response models and entity mapping
 - Config + Security layer: JWT, CORS, and Spring Security setup
 
