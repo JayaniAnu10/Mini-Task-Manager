@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/Modal";
 import { Plus, AlertTriangle, Shield } from "lucide-react";
 
-export default function DashboardPage() {
+export default function TaskPage() {
   const {
     fetchTasks,
     createTask,
@@ -145,9 +145,9 @@ export default function DashboardPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl border-2 border-slate-300 bg-white divide-y divide-slate-300">
+        <div className="rounded-2xl  bg-white">
           {paged.data.map((task, i) => (
-            <div key={task.id} className="p-1">
+            <div key={task.id} className="py-2">
               <TaskCard
                 task={task}
                 isAdmin={isAdmin}

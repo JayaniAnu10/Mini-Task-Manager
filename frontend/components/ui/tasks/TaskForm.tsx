@@ -169,7 +169,11 @@ export default function TaskForm({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} loading={isLoading}>
+          <Button
+            onClick={handleSubmit}
+            loading={isLoading}
+            className="bg-blue-600"
+          >
             {isEdit ? "Save Changes" : "Create Task"}
           </Button>
         </div>
