@@ -72,11 +72,6 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-blue-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wide">
-              <Shield className="w-3 h-3" /> Admin View
-            </span>
-          </div>
           <h1 className="text-2xl font-bold text-slate-800">
             Good to see you, {currentUser?.email?.split("@")[0]}!
           </h1>

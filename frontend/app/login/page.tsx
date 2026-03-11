@@ -90,7 +90,7 @@ export default function LoginPage() {
             <Input
               label="Email"
               type="email"
-              placeholder="admin@demo.com"
+              placeholder="you@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={fieldErrors.email}
