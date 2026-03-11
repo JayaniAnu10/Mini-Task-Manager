@@ -1,22 +1,23 @@
 package com.taskmanager.backend.repositories;
 
-import com.taskmanager.backend.dtos.AllTaskResponse;
-import com.taskmanager.backend.dtos.TaskResponse;
-import com.taskmanager.backend.entities.Task;
-import com.taskmanager.backend.enums.Priority;
-import com.taskmanager.backend.enums.Status;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.UUID;
+import com.taskmanager.backend.dtos.AllTaskResponse;
+import com.taskmanager.backend.dtos.TaskResponse;
+import com.taskmanager.backend.entities.Task;
+import com.taskmanager.backend.enums.Priority;
+import com.taskmanager.backend.enums.Status;
 
 public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("""
        SELECT new com.taskmanager.backend.dtos.TaskResponse(
+           t.id,
            t.title,
            t.description,
            t.status,
@@ -40,6 +41,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     @Query("""
             SELECT new com.taskmanager.backend.dtos.AllTaskResponse(
+           t.id,
            t.title,
            t.description,
            t.status,
