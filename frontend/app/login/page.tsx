@@ -47,10 +47,10 @@ export default function LoginPage() {
         </p>
 
         <div className="mt-6 rounded-2xl bg-blue-100 px-4 py-3 text-center md:px-6">
-          <p className="text-base font-semibold text-blue-700 md:text-lg">
+          <p className="text-base font-semibold text-blue-700 ">
             Admin: admin@demo.com / password123
           </p>
-          <p className="mt-1 text-base font-semibold text-blue-700 md:text-lg">
+          <p className="mt-1 text-base font-semibold text-blue-700 ">
             User: user@demo.com / user1234
           </p>
         </div>
