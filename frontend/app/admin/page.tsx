@@ -127,9 +127,9 @@ export default function DashboardPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white">
+        <div className="rounded-2xl bg-white flex flex-col gap-7">
           {paged.data.map((task) => (
-            <div key={task.id} className="py-2">
+            <div key={task.id}>
               <TaskCard task={task} isAdmin={true} viewOnly />
             </div>
           ))}
