@@ -206,7 +206,7 @@ export default function TaskPage() {
       ) : (
         <div className="rounded-2xl  bg-white">
           {paged.data.map((task, i) => (
-            <div key={task.id} className="py-2">
+            <div key={task.id}>
               <TaskCard
                 task={task}
                 isAdmin={isAdmin}

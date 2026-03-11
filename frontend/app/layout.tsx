@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
+import { Quicksand, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const quicksand = Quicksand({
   variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
 });
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${plusJakartaSans.variable} ${geistMono.variable} antialiased`}
+        className={`${quicksand.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
