@@ -36,7 +36,7 @@ export default function TaskCard({
   const overdue = isOverdue(task.dueDate, task.status);
 
   return (
-    <div className="task-card bg-white rounded-2xl border border-slate-400/40 p-4 mx-2 flex flex-col gap-1 animate-fade-in">
+    <div className="task-card rounded-2xl border border-slate-400/40 p-4  flex flex-col gap-1 animate-fade-in">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <h2

@@ -48,6 +48,7 @@ export default function TaskForm({
   isLoading,
 }: TaskFormProps) {
   const isEdit = !!task;
+  const today = new Date().toISOString().split("T")[0];
 
   const [form, setForm] = useState<FormData>({
     title: "",
@@ -86,6 +87,9 @@ export default function TaskForm({
       e.title = "Title must be at least 3 characters";
     if (!form.description.trim()) e.description = "Description is required";
     if (!form.dueDate) e.dueDate = "Due date is required";
+    else if (form.dueDate < today) {
+      e.dueDate = "Due date cannot be before today";
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -161,6 +165,7 @@ export default function TaskForm({
           label="Due Date"
           type="date"
           value={form.dueDate}
+          min={today}
           onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
           error={errors.dueDate}
         />
