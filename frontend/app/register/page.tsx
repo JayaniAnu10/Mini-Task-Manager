@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, CheckSquare } from "lucide-react";
+import { Mail, Lock, CheckSquare, Eye, EyeOff } from "lucide-react";
 import { registerUser } from "@/lib/authApi";
 import { getApiErrorMessage } from "@/lib/apiClient";
 
@@ -20,6 +20,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
 
@@ -94,23 +96,55 @@ export default function RegisterPage() {
 
             <Input
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               error={fieldErrors.password}
               icon={<Lock className="h-5 w-5" />}
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="cursor-pointer rounded text-slate-500 hover:text-slate-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              }
               className="h-11 rounded-xl border-slate-200 bg-slate-100 pl-11 text-base text-slate-700 placeholder:text-slate-400"
             />
 
             <Input
               label="Confirm Password"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               error={fieldErrors.confirm}
               icon={<Lock className="h-5 w-5" />}
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
+                  className="cursor-pointer rounded text-slate-500 hover:text-slate-700"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              }
               className="h-11 rounded-xl border-slate-200 bg-slate-100 pl-11 text-base text-slate-700 placeholder:text-slate-400"
             />
 
