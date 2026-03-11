@@ -63,10 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/logout").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/user/*").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/tasks").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/tasks").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/admin/tasks").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/admin/tasks").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new CorsConfiguration();
