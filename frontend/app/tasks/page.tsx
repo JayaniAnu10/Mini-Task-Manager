@@ -149,9 +149,12 @@ export default function TaskPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-            Tasks
+            Welcome to TaskFlow!
           </h1>
-          <p className="text-slate-500 text-base mt-1">{taskCountLabel}</p>
+          <p className="text-slate-500/80 text-lg mt-1">
+            Stay organized and keep your tasks on track
+          </p>
+          <p className="text-slate-500 text-lg mt-6">{taskCountLabel}</p>
         </div>
         <Button
           onClick={() => setFormOpen(true)}
