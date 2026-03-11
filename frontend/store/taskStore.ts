@@ -34,17 +34,6 @@ interface AdminTaskResponse {
   email: string;
 }
 
-interface TaskListingResponse {
-  taskList: {
-    content: UserTaskResponse[];
-    totalElements: number;
-    number: number;
-    size: number;
-    totalPages: number;
-  };
-  totalTasks: number;
-}
-
 interface SpringPageResponse<T> {
   content: T[];
   totalElements: number;
@@ -132,20 +121,19 @@ export function useTaskStore() {
           totalPages: response.totalPages,
         };
       } else {
-        const { data: response } = await apiClient.get<TaskListingResponse>(
-          "/tasks",
-          { params },
-        );
+        const { data: response } = await apiClient.get<
+          SpringPageResponse<UserTaskResponse>
+        >("/tasks", { params });
 
-        const mappedTasks = response.taskList.content.map(mapUserTaskToTask);
+        const mappedTasks = response.content.map(mapUserTaskToTask);
         setTasks(mappedTasks);
 
         return {
           data: mappedTasks,
-          total: response.taskList.totalElements,
-          page: response.taskList.number + 1,
-          pageSize: response.taskList.size,
-          totalPages: response.taskList.totalPages,
+          total: response.totalElements,
+          page: response.number + 1,
+          pageSize: response.size,
+          totalPages: response.totalPages,
         };
       }
     },

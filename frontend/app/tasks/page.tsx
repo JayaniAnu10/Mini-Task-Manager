@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/Modal";
 import { Plus, AlertTriangle } from "lucide-react";
 import { getMe, MeResponse } from "@/lib/authApi";
+import toast from "react-hot-toast";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function TaskPage() {
   const router = useRouter();
@@ -80,35 +82,57 @@ export default function TaskPage() {
 
   const handleCreate = async (data: Partial<Task>) => {
     setSaving(true);
-    await createTask({
-      ...data,
-      userId: currentUser?.id ?? "",
-      userName: currentUser?.email ?? "",
-    } as Omit<Task, "id" | "createdAt" | "updatedAt">);
-    await load(filters);
-    setSaving(false);
-    setFormOpen(false);
+    try {
+      await createTask({
+        ...data,
+        userId: currentUser?.id ?? "",
+        userName: currentUser?.email ?? "",
+      } as Omit<Task, "id" | "createdAt" | "updatedAt">);
+      await load(filters);
+      toast.success("Task created successfully.");
+      setFormOpen(false);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Failed to create task."));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleEdit = async (data: Partial<Task>) => {
     if (!editTask) return;
     setSaving(true);
-    await updateTask(editTask.id, data);
-    await load(filters);
-    setSaving(false);
-    setEditTask(null);
+    try {
+      await updateTask(editTask.id, data);
+      await load(filters);
+      toast.success("Task updated successfully.");
+      setEditTask(null);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Failed to update task."));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await deleteTask(deleteId);
-    await load(filters);
-    setDeleteId(null);
+    try {
+      await deleteTask(deleteId);
+      await load(filters);
+      toast.success("Task deleted.");
+      setDeleteId(null);
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Failed to delete task."));
+    }
   };
 
   const handleMarkDone = async (id: string) => {
-    await markDone(id);
-    await load(filters);
+    try {
+      await markDone(id);
+      await load(filters);
+      toast.success("Task marked as done.");
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Failed to update task."));
+    }
   };
 
   if (!authChecked) {
