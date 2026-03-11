@@ -36,7 +36,7 @@ export default function TaskCard({
   const overdue = isOverdue(task.dueDate, task.status);
 
   return (
-    <div className="task-card bg-white rounded-2xl border border-slate-100 p-5 flex flex-col gap-2 animate-fade-in">
+    <div className="task-card bg-white rounded-2xl border border-slate-100 p-4 mx-2 flex flex-col gap-1 animate-fade-in">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <h2
@@ -82,16 +82,14 @@ export default function TaskCard({
         {task.description}
       </p>
 
-      {/* Badges */}
-      <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge status={task.status} />
-        <PriorityBadge priority={task.priority} />
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center pt-1 border-t border-slate-50">
+      {/* Badges + Due date */}
+      <div className="flex items-center justify-between gap-3 pt-1 border-t border-slate-50">
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusBadge status={task.status} />
+          <PriorityBadge priority={task.priority} />
+        </div>
         <div
-          className={`flex items-center gap-1.5 text-xs font-medium ${overdue ? "text-red-500" : "text-slate-400"}`}
+          className={`shrink-0 flex items-center gap-1.5 text-xs font-medium ${overdue ? "text-red-500" : "text-slate-400"}`}
         >
           <Calendar className="w-3.5 h-3.5" />
           {overdue && (

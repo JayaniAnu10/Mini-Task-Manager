@@ -143,14 +143,11 @@ export default function DashboardPage() {
           <p className="text-slate-400 text-sm mb-4">
             Try adjusting your filters or create a new task
           </p>
-          <Button onClick={() => setFormOpen(true)} size="sm">
-            <Plus className="w-3.5 h-3.5" /> Create Task
-          </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="rounded-2xl border-2 border-slate-300 bg-white divide-y divide-slate-300">
           {paged.data.map((task, i) => (
-            <div key={task.id}>
+            <div key={task.id} className="p-1">
               <TaskCard
                 task={task}
                 isAdmin={isAdmin}
