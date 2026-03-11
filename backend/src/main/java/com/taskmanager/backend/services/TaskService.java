@@ -41,9 +41,18 @@ public class TaskService {
         return ResponseEntity.ok().build();
     }
 
-    public Page<TaskResponse> getTasks(Status status, Priority priority, UUID userId, int page, int size, Sort sort) {
+    public Page<TaskResponse> getTasks(Status status, Priority priority, UUID userId, int page, int size, String sortBy, String sortDir) {
         User user = findUserById(userId);
-        Pageable pageable = PageRequest.of(page, size,sort);
+        if ("priority".equalsIgnoreCase(sortBy)) {
+            Pageable pageable = PageRequest.of(page, size);
+            return "desc".equalsIgnoreCase(sortDir)
+                    ? taskRepository.findByUserIdWithFiltersPriorityDesc(user.getId(), status, priority, pageable)
+                    : taskRepository.findByUserIdWithFiltersPriorityAsc(user.getId(), status, priority, pageable);
+        }
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         return taskRepository.findByUserIdWithFilters(user.getId(), status, priority, pageable);
     }
 

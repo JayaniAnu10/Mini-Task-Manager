@@ -58,4 +58,68 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
             @Param("priority") Priority priority,
             Pageable pageable
     );
+
+    @Query("""
+       SELECT new com.taskmanager.backend.dtos.TaskResponse(
+           t.id, t.title, t.description, t.status, t.priority, t.dueDate, t.createdAt
+       )
+       FROM Task t
+       WHERE t.user.id = :userId
+       AND (:status IS NULL OR t.status = :status)
+       AND (:priority IS NULL OR t.priority = :priority)
+       ORDER BY CASE t.priority WHEN 'LOW' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'HIGH' THEN 3 END ASC
+       """)
+    Page<TaskResponse> findByUserIdWithFiltersPriorityAsc(
+            @Param("userId") UUID userId,
+            @Param("status") Status status,
+            @Param("priority") Priority priority,
+            Pageable pageable
+    );
+
+    @Query("""
+       SELECT new com.taskmanager.backend.dtos.TaskResponse(
+           t.id, t.title, t.description, t.status, t.priority, t.dueDate, t.createdAt
+       )
+       FROM Task t
+       WHERE t.user.id = :userId
+       AND (:status IS NULL OR t.status = :status)
+       AND (:priority IS NULL OR t.priority = :priority)
+       ORDER BY CASE t.priority WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'LOW' THEN 3 END ASC
+       """)
+    Page<TaskResponse> findByUserIdWithFiltersPriorityDesc(
+            @Param("userId") UUID userId,
+            @Param("status") Status status,
+            @Param("priority") Priority priority,
+            Pageable pageable
+    );
+
+    @Query("""
+       SELECT new com.taskmanager.backend.dtos.AllTaskResponse(
+           t.id, t.title, t.description, t.status, t.priority, t.dueDate, t.createdAt, t.user.email
+       )
+       FROM Task t
+       WHERE (:status IS NULL OR t.status = :status)
+       AND (:priority IS NULL OR t.priority = :priority)
+       ORDER BY CASE t.priority WHEN 'LOW' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'HIGH' THEN 3 END ASC
+       """)
+    Page<AllTaskResponse> findAllWithFiltersPriorityAsc(
+            @Param("status") Status status,
+            @Param("priority") Priority priority,
+            Pageable pageable
+    );
+
+    @Query("""
+       SELECT new com.taskmanager.backend.dtos.AllTaskResponse(
+           t.id, t.title, t.description, t.status, t.priority, t.dueDate, t.createdAt, t.user.email
+       )
+       FROM Task t
+       WHERE (:status IS NULL OR t.status = :status)
+       AND (:priority IS NULL OR t.priority = :priority)
+       ORDER BY CASE t.priority WHEN 'HIGH' THEN 1 WHEN 'MEDIUM' THEN 2 WHEN 'LOW' THEN 3 END ASC
+       """)
+    Page<AllTaskResponse> findAllWithFiltersPriorityDesc(
+            @Param("status") Status status,
+            @Param("priority") Priority priority,
+            Pageable pageable
+    );
 }

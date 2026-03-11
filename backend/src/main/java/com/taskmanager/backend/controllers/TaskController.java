@@ -3,7 +3,6 @@ package com.taskmanager.backend.controllers;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,11 +52,7 @@ public class TaskController {
 
         UUID userId = (UUID)authentication.getPrincipal();
 
-        Sort sort = sortDir.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        return ResponseEntity.ok(taskService.getTasks(status, priority, userId, page, size, sort));
+        return ResponseEntity.ok(taskService.getTasks(status, priority, userId, page, size, sortBy, sortDir));
     }
 
     @PatchMapping("/{id}")
