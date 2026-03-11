@@ -1,7 +1,17 @@
 package com.taskmanager.backend.services;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import com.taskmanager.backend.dtos.TaskAddRequest;
-import com.taskmanager.backend.dtos.TaskListing;
+import com.taskmanager.backend.dtos.TaskResponse;
 import com.taskmanager.backend.dtos.UpdateTaskRequest;
 import com.taskmanager.backend.entities.Task;
 import com.taskmanager.backend.entities.User;
@@ -12,15 +22,8 @@ import com.taskmanager.backend.exceptions.NotFoundException;
 import com.taskmanager.backend.mappers.TaskMapper;
 import com.taskmanager.backend.repositories.TaskRepository;
 import com.taskmanager.backend.repositories.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
@@ -38,17 +41,10 @@ public class TaskService {
         return ResponseEntity.ok().build();
     }
 
-    public TaskListing getTasks(Status status, Priority priority, UUID userId, int page, int size, Sort sort) {
+    public Page<TaskResponse> getTasks(Status status, Priority priority, UUID userId, int page, int size, Sort sort) {
         User user = findUserById(userId);
-
         Pageable pageable = PageRequest.of(page, size,sort);
-        var listing = taskRepository.findByUserIdWithFilters(user.getId(), status, priority, pageable);
-        var totalTasks= taskRepository.countByUser_Id(userId);
-        var response = new TaskListing();
-        response.setTotalTasks(totalTasks);
-        response.setTaskList(listing);
-        return response;
-
+        return taskRepository.findByUserIdWithFilters(user.getId(), status, priority, pageable);
     }
 
     public ResponseEntity updateTask(UUID taskId, UpdateTaskRequest request, UUID userId) {
