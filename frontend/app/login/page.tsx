@@ -1,18 +1,41 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, CheckSquare } from "lucide-react";
+import { loginUser } from "@/lib/authApi";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     email?: string;
     password?: string;
   }>({});
+  const router = useRouter();
+
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: ({ token }) => {
+      localStorage.setItem("accessToken", token);
+      toast.success("You have signed in successfully.");
+      router.push("/tasks");
+    },
+    onError: (err) => {
+      const message = getApiErrorMessage(
+        err,
+        "Login failed. Please check your credentials.",
+      );
+      setError(message);
+      toast.error(message);
+    },
+  });
 
   const validate = () => {
     const e: typeof fieldErrors = {};
@@ -25,11 +48,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (!validate()) return;
 
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    setIsLoading(false);
+    await loginMutation.mutateAsync({ email, password });
   };
 
   return (
@@ -48,10 +70,7 @@ export default function LoginPage() {
 
         <div className="mt-6 rounded-2xl bg-blue-100 px-4 py-3 text-center md:px-6">
           <p className="text-base font-semibold text-blue-700 ">
-            Admin: admin@demo.com / password123
-          </p>
-          <p className="mt-1 text-base font-semibold text-blue-700 ">
-            User: user@demo.com / user1234
+            Admin Demo: admin@gmail.com / admin123
           </p>
         </div>
 
@@ -79,10 +98,16 @@ export default function LoginPage() {
               className="h-11 rounded-xl border-slate-200 bg-slate-100 pl-11 text-base text-slate-700 placeholder:text-slate-400"
             />
 
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                {error}
+              </div>
+            )}
+
             <Button
               type="submit"
               size="lg"
-              loading={isLoading}
+              loading={loginMutation.isPending}
               className="mt-1 h-11 w-full rounded-xl bg-blue-500 text-base font-semibold text-white hover:bg-blue-600"
             >
               Sign In

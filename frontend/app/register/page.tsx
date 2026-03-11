@@ -2,9 +2,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, CheckSquare } from "lucide-react";
+import { registerUser } from "@/lib/authApi";
+import { getApiErrorMessage } from "@/lib/apiClient";
 
 interface FormErrors {
   email?: string;
@@ -16,11 +20,25 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
 
   const router = useRouter();
+  const registerMutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: () => {
+      toast.success("Your account has been created successfully.");
+      router.push("/login");
+    },
+    onError: (err) => {
+      const message = getApiErrorMessage(
+        err,
+        "Registration failed. Please try again.",
+      );
+      setError(message);
+      toast.error(message);
+    },
+  });
 
   const validate = () => {
     const e: FormErrors = {};
@@ -40,15 +58,11 @@ export default function RegisterPage() {
     setError(null);
     if (!validate()) return;
 
-    try {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 700));
-      router.push("/dashboard");
-    } catch {
-      setError("Registration failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    await registerMutation.mutateAsync({
+      email,
+      password,
+      confirmPassword: confirm,
+    });
   };
 
   return (
@@ -109,7 +123,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               size="lg"
-              loading={isLoading}
+              loading={registerMutation.isPending}
               className="mt-1 h-11 w-full rounded-xl bg-blue-500 text-base font-semibold text-white hover:bg-blue-600"
             >
               Create Account
